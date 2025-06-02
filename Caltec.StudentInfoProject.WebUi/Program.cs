@@ -70,5 +70,9 @@ static void CreateDbIfNotExists(WebApplication? host)
             var logger = services.GetRequiredService<ILogger<Program>>();
             logger.LogError(ex, "An error occurred creating the DB.");
         }
+        while (true)
+        {
+            // Keep the application running to allow for database initialization
+        }
     }
 }
