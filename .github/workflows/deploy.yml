@@ -1,0 +1,29 @@
+name: Deploy Local
+
+on:
+  workflow_run:
+    workflows: ["Docker Build and Push"]
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Stop containers
+        run: docker-compose down || true
+      
+      - name: Deploy
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        run: |
+          docker-compose pull
+          docker-compose up -d
+          sleep 30
+          docker-compose ps
