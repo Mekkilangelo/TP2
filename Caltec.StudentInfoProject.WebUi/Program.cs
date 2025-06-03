@@ -4,7 +4,8 @@ using Caltec.StudentInfoProject.Persistence.Initializer;
 using Caltec.Dependency;
 using Microsoft.EntityFrameworkCore;
 
-string connectionString = @"Server=.\SQLExpress;Database=AppCustomerDiiageDbe;Trusted_Connection=Yes;";
+// Chaîne de connexion pour Docker (sqlserver = nom du service dans docker-compose)
+string connectionString = @"Server=sqlserver,1433;Database=StudentInfoDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true;";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,10 +70,6 @@ static void CreateDbIfNotExists(WebApplication? host)
         {
             var logger = services.GetRequiredService<ILogger<Program>>();
             logger.LogError(ex, "An error occurred creating the DB.");
-        }
-        while (true)
-        {
-            // Keep the application running to allow for database initialization
         }
     }
 }
