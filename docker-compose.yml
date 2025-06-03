@@ -1,0 +1,26 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    environment:
+      - SA_PASSWORD=YourStrong!Passw0rd
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: student-info-app:latest
+    ports:
+      - "3000:80"
+    depends_on:
+      - sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+
+volumes:
+  sqlserver_data:
