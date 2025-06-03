@@ -34,6 +34,8 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/student-info-app:${{ github.sha }}
       
       - name: Test with Docker Compose
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
           docker-compose pull
           docker-compose up -d

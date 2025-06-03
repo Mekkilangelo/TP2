@@ -11,7 +11,7 @@ services:
       - sqlserver_data:/var/opt/mssql
 
   webapp:
-    image: ${{ secrets.DOCKER_USERNAME }}/student-info-app:latest
+    image: ${DOCKER_USERNAME}/student-info-app:latest
     ports:
       - "3000:80"
     depends_on:
