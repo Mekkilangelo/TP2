@@ -19,8 +19,13 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       
-      - name: Build Docker image
-        run: docker build -t student-info-app:latest .
+      - name: Build Docker image with SonarQube
+        run: |
+          docker build -t student-info-app:latest \
+            --build-arg SONAR_TOKEN="${{ secrets.SONAR_TOKEN }}" \
+            --build-arg SONAR_PROJECT_KEY="Mekkilangelo_TP2" \
+            --build-arg SONAR_ORGANIZATION="mekkilangelo" \
+            .
       
       - name: Tag image for Docker Hub
         run: docker tag student-info-app:latest ${{ secrets.DOCKER_USERNAME }}/student-info-app:latest
