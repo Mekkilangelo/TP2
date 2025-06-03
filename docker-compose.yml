@@ -11,10 +11,7 @@ services:
       - sqlserver_data:/var/opt/mssql
 
   webapp:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: student-info-app:latest
+    image: ${{ secrets.DOCKER_USERNAME }}/student-info-app:latest
     ports:
       - "3000:80"
     depends_on:
