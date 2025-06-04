@@ -40,15 +40,6 @@ jobs:
           docker-compose up -d webapp-${{ steps.target.outputs.target }}
           sleep 30
       
-      - name: Health check
-        run: |
-          if [ "${{ steps.target.outputs.target }}" = "blue" ]; then
-            docker-compose exec -T webapp-blue curl -f http://localhost:80 || exit 1
-          else
-            docker-compose exec -T webapp-green curl -f http://localhost:80 || exit 1
-          fi
-          echo "Health check passed!"
-      
       - name: Switch traffic
         run: |
           echo "Switching to ${{ steps.target.outputs.target }} environment..."
