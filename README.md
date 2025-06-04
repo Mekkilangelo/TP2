@@ -98,3 +98,4 @@ Intégrez une analyse statique de code à l’un de vos dépôts GitHub existant
 Si vous ne disposez pas d’un dépôt GitHub, vous pouvez choisir la stack de votre choix à partir du projet RealWorld App disponible à l'URL suivante : [RealWorld App](https://codebase.show/projects/realworld).
 
 Ensuite, reproduisez les étapes précédentes sur ce nouveau projet.
+

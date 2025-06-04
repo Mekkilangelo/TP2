@@ -4,7 +4,8 @@ using Caltec.StudentInfoProject.Persistence.Initializer;
 using Caltec.Dependency;
 using Microsoft.EntityFrameworkCore;
 
-string connectionString = @"Server=.\SQLExpress;Database=AppCustomerDiiageDbe;Trusted_Connection=Yes;";
+// Chaîne de connexion pour Docker (sqlserver = nom du service dans docker-compose)
+string connectionString = @"Server=sqlserver,1433;Database=StudentInfoDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true;";
 
 var builder = WebApplication.CreateBuilder(args);
 
