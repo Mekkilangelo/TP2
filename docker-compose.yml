@@ -22,8 +22,6 @@ services:
 
   webapp-blue:
     image: ${DOCKER_USERNAME}/student-info-app:latest
-    ports:
-      - "3001:80"
     depends_on:
       - sqlserver
     environment:
@@ -31,8 +29,6 @@ services:
 
   webapp-green:
     image: ${DOCKER_USERNAME}/student-info-app:latest
-    ports:
-      - "3002:80"
     depends_on:
       - sqlserver
     environment:
