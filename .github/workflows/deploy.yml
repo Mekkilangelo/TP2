@@ -1,4 +1,4 @@
-name: Deploy Local
+name: Deploy Blue/Green
 
 on:
   workflow_run:
@@ -16,14 +16,47 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Stop containers
-        run: docker-compose down || true
+      - name: Determine target environment
+        id: target
+        run: |
+          if grep -q "webapp-blue:80" nginx.conf; then
+            echo "target=green" >> $GITHUB_OUTPUT
+            echo "current=blue" >> $GITHUB_OUTPUT
+            echo "Current: Blue, Deploying to: Green"
+          else
+            echo "target=blue" >> $GITHUB_OUTPUT
+            echo "current=green" >> $GITHUB_OUTPUT
+            echo "Current: Green, Deploying to: Blue"
+          fi
       
-      - name: Deploy
+      - name: Deploy to inactive environment
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
-          docker-compose pull
-          docker-compose up -d
+          docker-compose pull webapp-${{ steps.target.outputs.target }}
+          docker-compose up -d webapp-${{ steps.target.outputs.target }}
           sleep 30
-          docker-compose ps
+      
+      - name: Health check
+        run: |
+          if [ "${{ steps.target.outputs.target }}" = "blue" ]; then
+            curl -f http://localhost:3001 || exit 1
+          else
+            curl -f http://localhost:3002 || exit 1
+          fi
+          echo "Health check passed!"
+      
+      - name: Switch traffic
+        run: |
+          echo "Switching to ${{ steps.target.outputs.target }} environment..."
+          cp nginx-${{ steps.target.outputs.target }}.conf nginx.conf
+          docker-compose restart nginx
+          echo "Traffic switched to ${{ steps.target.outputs.target }}!"
+      
+      - name: Verify deployment
+        run: |
+          sleep 5
+          curl -f http://localhost:3000 || exit 1
+          echo "Deployment successful!"
+          echo "Active environment: ${{ steps.target.outputs.target }}"
+          echo "Standby environment: ${{ steps.target.outputs.current }}"
