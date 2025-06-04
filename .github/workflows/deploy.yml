@@ -19,6 +19,16 @@ jobs:
       - name: Clean up orphan containers
         run: docker-compose down --remove-orphans || true
       
+      - name: Start all services
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        run: |
+          docker-compose pull
+          docker-compose up -d
+          sleep 30
+          echo "All services started"
+          docker-compose ps
+      
       - name: Determine target environment
         id: target
         run: |
@@ -36,9 +46,11 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
+          echo "Updating ${{ steps.target.outputs.target }} environment..."
           docker-compose pull webapp-${{ steps.target.outputs.target }}
           docker-compose up -d webapp-${{ steps.target.outputs.target }}
-          sleep 30
+          sleep 15
+          echo "${{ steps.target.outputs.target }} environment updated"
       
       - name: Switch traffic
         run: |
@@ -46,10 +58,16 @@ jobs:
           cp nginx-${{ steps.target.outputs.target }}.conf nginx.conf
           docker-compose restart nginx
           echo "Traffic switched to ${{ steps.target.outputs.target }}!"
+          echo "Checking nginx status..."
+          docker-compose ps nginx
+          docker-compose logs nginx --tail=10
       
       - name: Verify deployment
         run: |
-          sleep 5
+          sleep 10
+          echo "Checking all services status:"
+          docker-compose ps
+          echo "Testing connection..."
           curl -f http://localhost:3000 || exit 1
           echo "Deployment successful!"
           echo "Active environment: ${{ steps.target.outputs.target }}"
