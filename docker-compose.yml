@@ -19,6 +19,11 @@ services:
     depends_on:
       - webapp-blue
       - webapp-green
+    labels:
+      - "logging=promtail"
+    networks:
+      - default
+      - monitoring
 
   webapp-blue:
     image: ${DOCKER_USERNAME}/student-info-app:latest
@@ -26,6 +31,12 @@ services:
       - sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+    labels:
+      - "logging=promtail"
+      - "environment=blue"
+    networks:
+      - default
+      - monitoring
 
   webapp-green:
     image: ${DOCKER_USERNAME}/student-info-app:latest
@@ -33,6 +44,59 @@ services:
       - sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+    labels:
+      - "logging=promtail"
+      - "environment=green"
+    networks:
+      - default
+      - monitoring
+
+  # === MONITORING STACK ===
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3002:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    depends_on:
+      - loki
+    networks:
+      - monitoring
+    restart: unless-stopped
 
 volumes:
   sqlserver_data:
+  loki-data:
+  grafana-data:
+
+networks:
+  default:
+    driver: bridge
+  monitoring:
+    driver: bridge
