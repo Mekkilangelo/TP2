@@ -1,0 +1,391 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 4,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "Blue/Green Deployment",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": "/d/bluegreen-deployment"
+    },
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "Application Monitoring",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": "/d/app-monitoring"
+    },
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "Deployment Timeline",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": "/d/deployment-timeline"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# 🚀 Monitoring Blue/Green Deployment - Student Info App\n\n## 📊 Dashboards Disponibles\n\n### 🔄 [Blue/Green Deployment Dashboard](/d/bluegreen-deployment)\n- **Vue d'ensemble** : Activité Blue vs Green\n- **Trafic en temps réel** : Répartition du trafic entre environnements\n- **Logs de déploiement** : Suivi en temps réel des déploiements\n- **Switch monitoring** : Visualisation des basculements\n\n### 📈 [Application Monitoring Dashboard](/d/app-monitoring)\n- **Métriques système** : Instances actives, requêtes/sec\n- **Statut d'environnement** : Quel environnement est actuellement actif\n- **Détection d'erreurs** : Alertes sur les erreurs applicatives\n- **Performance** : Activité par container\n\n### ⏱️ [Deployment Timeline Dashboard](/d/deployment-timeline)\n- **Historique des déploiements** : Timeline des déploiements\n- **Métriques de performance** : Temps de switch Blue/Green\n- **Guide de monitoring** : Étapes à suivre pendant un déploiement\n- **Logs détaillés** : Timeline complète des événements\n\n---\n\n## 🎯 Accès Rapide\n\n- **Application** : [http://localhost:3000](http://localhost:3000)\n- **Grafana** : [http://localhost:3002](http://localhost:3002)\n- **Loki API** : [http://localhost:3100](http://localhost:3100)\n\n---\n\n## 🔍 Monitoring d'un Déploiement\n\n1. **Ouvrir le [Dashboard Blue/Green](/d/bluegreen-deployment)**\n2. **Activer le Live Streaming** (icône play en haut à droite)\n3. **Déclencher un déploiement** via GitHub Actions\n4. **Observer** :\n   - Le démarrage du nouvel environnement\n   - Le switch de trafic\n   - Les logs en temps réel\n5. **Vérifier** dans le [Dashboard Application](/d/app-monitoring) que l'environnement actif a changé\n\n---\n\n*Dernière mise à jour : $(date)*",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.4.7",
+      "title": "🏠 Accueil - Monitoring Blue/Green Deployment",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 0,
+                  "text": "🔴 OFFLINE"
+                },
+                "1": {
+                  "color": "yellow",
+                  "index": 1,
+                  "text": "🟡 PARTIAL"
+                },
+                "2": {
+                  "color": "green",
+                  "index": 2,
+                  "text": "🟢 ONLINE"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "green",
+                "value": 2
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 8
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "textMode": "value"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "count(count by (container) ({container=~\".*webapp.*\"} [1m]))",
+          "queryType": "",
+          "refId": "A"
+        }
+      ],
+      "title": "🎯 Statut Global",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "blue": {
+                  "color": "blue",
+                  "index": 0,
+                  "text": "🔵 BLUE"
+                },
+                "green": {
+                  "color": "green",
+                  "index": 1,
+                  "text": "🟢 GREEN"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "textMode": "value"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "topk(1, sum by (environment) (count_over_time({container=~\".*webapp.*\", environment=~\"blue|green\"} [5m])))",
+          "queryType": "",
+          "refId": "A"
+        }
+      ],
+      "title": "🔄 Environnement Actif",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "textMode": "value"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "count(count by (container) ({container=~\".*\"} |~ \"(?i)error|exception|fail\" [5m]))",
+          "queryType": "",
+          "refId": "A"
+        }
+      ],
+      "title": "⚠️ Erreurs Récentes",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 100
+              },
+              {
+                "color": "red",
+                "value": 1000
+              }
+            ]
+          },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "textMode": "value"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate({container=~\".*nginx.*\"} [1m]))",
+          "queryType": "",
+          "refId": "A"
+        }
+      ],
+      "title": "📊 Trafic Actuel",
+      "type": "stat"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [
+    "home",
+    "overview",
+    "navigation"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "🏠 Home - Blue/Green Monitoring",
+  "uid": "home-dashboard",
+  "version": 1,
+  "weekStart": ""
+}
